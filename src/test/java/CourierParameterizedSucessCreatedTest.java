@@ -5,9 +5,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.apache.http.HttpStatus.SC_CREATED;
+import static org.hamcrest.CoreMatchers.is;
 
 @RunWith(Parameterized.class)
 public class CourierParameterizedSucessCreatedTest {
@@ -41,16 +40,11 @@ public class CourierParameterizedSucessCreatedTest {
 
 
     @Test
-    public void courierFailedCreatedTest() {
+    public void courierSuccessCreatedTest() {
         ValidatableResponse response = courierClient.create(courier);
-
-
-        int statusCode = response.extract().statusCode();
         courierId = courierClient.login(CourierCredentials.from(courier)).extract().path("id");
-        Boolean isCourierCreated = response.extract().path("ok");
 
-        assertThat("Status code is incorrect", statusCode, equalTo(201));
-        assertTrue("Courier ID is incorrect", courierId > 0);
-        assertTrue("Courier is not created", isCourierCreated);
+        response.assertThat().statusCode(SC_CREATED);
+        response.body("ok", is(true));
     }
 }

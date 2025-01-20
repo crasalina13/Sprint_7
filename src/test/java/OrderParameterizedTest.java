@@ -4,13 +4,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import static org.junit.Assert.assertTrue;
+import static org.apache.http.HttpStatus.SC_CREATED;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.Matchers.greaterThan;
 
 @RunWith(Parameterized.class)
 public class OrderParameterizedTest {
 
     private OrderClient orderClient;
-    private int orderId;
 
     public final String[] color;
 
@@ -36,8 +38,8 @@ public class OrderParameterizedTest {
     public void orderSuccessCreatedFieldColorTest() {
         ValidatableResponse response = orderClient.create(Order.getOrderWithSetColor(color));
 
-        int orderId = orderClient.getOrderId(response);
-
-        assertTrue("Order is not created", orderId > 0);
+        response.assertThat().statusCode(SC_CREATED);
+        response.body("track", is(notNullValue()));
+        response.body("track", greaterThan(0));
     }
 }

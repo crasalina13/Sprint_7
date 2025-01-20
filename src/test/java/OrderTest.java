@@ -2,11 +2,11 @@ import io.restassured.response.ValidatableResponse;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.HashMap;
+import static org.apache.http.HttpStatus.SC_OK;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.emptyOrNullString;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 
 public class OrderTest {
 
@@ -19,13 +19,14 @@ public class OrderTest {
 
     @Test
     public void getInfoOrderTest() {
-        int orderId = orderClient.getOrderId(orderClient.create(Order.getOrderWithSetColor(new String[]{})));
+        int orderId = orderClient
+                .create(Order.getOrderWithSetColor(new String[]{}))
+                .extract()
+                .path("track");
+
         ValidatableResponse response = orderClient.getOrderInfo(orderId);
 
-        int statusCode = response.extract().statusCode();
-        HashMap<String, String> orderInfo = response.extract().path("order");
-
-        assertThat("Status code is incorrect", statusCode, equalTo(200));
-        assertFalse("Order is not found", orderInfo.isEmpty());
+        response.assertThat().statusCode(SC_OK);
+        response.body("order", is(not(emptyOrNullString())));
     }
 }

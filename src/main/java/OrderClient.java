@@ -6,7 +6,7 @@ import static io.restassured.RestAssured.given;
 public class OrderClient extends RestAssuredClient {
     private static final String ORDER_PATH = "api/v1/orders/";
 
-    @Step
+    @Step("create order")
     public ValidatableResponse create(Order order) {
         return given()
                 .spec(getBaseSpec())
@@ -16,14 +16,7 @@ public class OrderClient extends RestAssuredClient {
                 .then();
     }
 
-    @Step
-    public int getOrderId(ValidatableResponse response) {
-        return response
-                .extract()
-                .path("track");
-    }
-
-    @Step
+    @Step("get order info")
     public ValidatableResponse getOrderInfo(int orderId) {
         return given()
                 .spec(getBaseSpec())

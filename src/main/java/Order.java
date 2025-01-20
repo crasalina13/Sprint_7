@@ -30,9 +30,9 @@ public class Order {
         final String firstName = RandomStringUtils.randomAlphabetic(10);
         final String lastName = RandomStringUtils.randomAlphabetic(10);
         final String address = RandomStringUtils.randomAlphabetic(10);
-        final int metroStation = Integer.valueOf((int) Math.random());
+        final int metroStation = (int) (Math.random() * 11);
         final String phone = RandomStringUtils.randomAlphabetic(10);
-        final int rentTime = Integer.valueOf((int) Math.random());
+        final int rentTime = (int) (Math.random() * 11);
         final String deliveryDate = (new SimpleDateFormat("yyyy-MM-dd")).format(new Date());
         final String comment = RandomStringUtils.randomAlphabetic(10);
         return new Order(firstName, lastName, address, metroStation, phone, rentTime, deliveryDate, comment, color);

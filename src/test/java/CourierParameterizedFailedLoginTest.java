@@ -3,8 +3,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
+import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
 public class CourierParameterizedFailedLoginTest {
@@ -24,21 +25,17 @@ public class CourierParameterizedFailedLoginTest {
     @Parameterized.Parameters
     public static Object[][] getCourierInfo() {
         return new Object[][]{
-                {Courier.getWithLoginOnly(), "Недостаточно данных для входа", 400},
-                {Courier.getWithPasswordOnly(), "Недостаточно данных для входа", 400},
-                {Courier.getRandom(), "Учетная запись не найдена", 404}
+                {Courier.getWithLoginOnly(), "Недостаточно данных для входа", SC_BAD_REQUEST},
+                {Courier.getWithPasswordOnly(), "Недостаточно данных для входа", SC_BAD_REQUEST},
+                {Courier.getRandom(), "Учетная запись не найдена", SC_NOT_FOUND}
         };
     }
-
 
     @Test
     public void courierFailedLoginTest() {
         ValidatableResponse response = new CourierClient().login(CourierCredentials.from(courier));
 
-        int statusCode = response.extract().statusCode();
-        assertThat("Response incorrect status code", statusCode, equalTo(expectedStatusCode));
-
-        String errorMessage = response.extract().path("message");
-        assertThat("Response incorrect error message", errorMessage, equalTo(expectedErrorMessage));
+        response.assertThat().statusCode(expectedStatusCode);
+        response.body("message", equalTo(expectedErrorMessage));
     }
 }
